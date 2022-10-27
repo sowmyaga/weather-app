@@ -1,6 +1,5 @@
 
 import Forecast from "./components/Forcast";
-
 function App() {
   return (
     <div className="App">
