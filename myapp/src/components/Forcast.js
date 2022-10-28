@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import "./Forcast.css";
+import axios from 'axios';
 
 const Forecast = () => {
-    const [weatherData, setweatherData] = useState([]);
-    const [currentweather, setcurrentweather] = useState([])
-    const [City, setCity] = useState("bangalore");
-    const [unit, setUnit] = useState("");
-    const [isImperialUnitSelected, setIsImperialUnitSelected] = useState(false);
+    const [weatherData, setweatherData] = useState([]);//to set week weather data
+    const [currentweather, setcurrentweather] = useState([])//to current day weather data
+    const [City, setCity] = useState("bangalore");//default taking current location to display weather data.
+    const [unit, setUnit] = useState("");//to switch between different units
+    const [isImperialUnitSelected, setIsImperialUnitSelected] = useState(false);//boolen to switch different units.
+
+    //to get onload data to display weather data
     useEffect(() => {
         handleSearchByLocation();
     }, [])
+
+    //onchange function to get input location value
     const handleCityInput = (e) => {
         setCity(e.target.value);
     }
+
+    //switch units between imperial/metric units
     const handleUnits = (e) => {
         setUnit(e.target.value);
         if (e.target.value == "imperial") {
@@ -23,8 +29,10 @@ const Forecast = () => {
             setIsImperialUnitSelected(false);
         }
     }
+
+    //onclick function to get searched location data
     const handleSearchByLocation = async () => {
-        const article = {
+        const data = {
             days: 7,
             location: City,
         };
@@ -32,7 +40,7 @@ const Forecast = () => {
             'Authorization': `Bearer ${process.env.REACT_APP_API_KEY}`,
             'Content-Type': 'application/json'
         };
-        await axios.post(`${process.env.REACT_APP_API}`, article, { headers })
+        await axios.post(`${process.env.REACT_APP_API}`, data, { headers })
             .then((response) => {
                 if (!response) {
                     return false;
@@ -43,6 +51,8 @@ const Forecast = () => {
                 }
             });
     }
+
+    //to get Ui week weather data
     const weatherUi = Object.keys(currentweather).length ? weatherData.forecast.map((item) => {
         var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         var d = new Date(item.date);
@@ -66,6 +76,7 @@ const Forecast = () => {
         )
     }) : ""
 
+    //formatting date
     var dob = new Date(Object.keys(currentweather).length ? currentweather.forecast[0].date : "");
     var dobArr = dob.toDateString().split(' ');
     var dobFormat = dobArr[0] + ',' + dobArr[1] + ' ' + dobArr[2]
@@ -101,7 +112,7 @@ const Forecast = () => {
                         <div className="weather-data">Pollen Count:36</div>
                     </div>
                 </div>
-                {isImperialUnitSelected ? weatherUi : weatherUi}
+                {weatherUi}
             </div>
         </>
     )
